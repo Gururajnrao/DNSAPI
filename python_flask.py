@@ -10,11 +10,13 @@ from socket import gaierror
 
 ## Creating a Flask app
 
-class dnsapi (object):
-    """
+class dnsapi(object):
+   """
         Class to host the API to get domain name and give IPs as response
-    """
-  def __init__(self):
+   """
+   
+   app=Flask(__name__)
+   def __init__(self):
       self.logger = logging.getLogger("DNSAPI")
       if not self.logger.hasHandlers():
         self.logger.setLevel(logging.DEBUG)
@@ -22,10 +24,8 @@ class dnsapi (object):
         formatter=logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         ch.setFormatter(formatter)
         self.logger.addHandler(ch)
-        self.app=Flask(__name__)
   
-  @self.app.route('/<domain>',methods=['GET']) 
-  def route(self,domain):
+   def route(self,domain):
       if(request.method == 'GET'):
         try:  
           self.x=socket.gethostbyname_ex(domain)
@@ -35,12 +35,17 @@ class dnsapi (object):
           self.logger.info("Invalid domain")
           return jsonify({'ipaddress': "Non existent domain"})
 
-  def run(self):
-    self.app.run(debug=True)  
+   def run(self):
+     self.app.run(debug=True)  
 
 #driver function
 if __name__=='__main__':
    a = dnsapi()
-   a.run()
+   app=dnsapi.app
+   @app.route('/<domain>',methods=['GET'])
+   def route(domain):
+       return a.route(domain)
+   app.run(debug=True)
+
 
 
